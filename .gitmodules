@@ -1,0 +1,3 @@
+[submodule "example/simple"]
+	path = example/simple
+	url = https://gitlab.com/basal/example_simple.git
