@@ -13,45 +13,34 @@ abstract class Model {}
 /// The model manager. Wraps an instance of the provided [Model] with a
 /// [BehaviorSubject],
 class Manager<T extends Model> {
-
-  final BehaviorSubject<T> _controller =
-    new BehaviorSubject().asBroadcastStream();
+  final BehaviorSubject<T> _controller;
 
   T get model => _controller.value;
   set model(T model) => _controller.add(model);
   Stream<T> get stream => _controller.stream;
 
-  Manager(T initalState) {
-    _controller.add(initalState);
-  }
+  Manager(T initalState) :
+    _controller = new BehaviorSubject<T>(seedValue: initalState);
 
   String toString() => 'Manager of ${model.runtimeType} ($model)';
 }
 
 class Provider extends StatelessWidget {
-
-  final Widget child;
+  final Function child;
   final List<Manager> managers;
 
-  Provider({
-    Key key,
-    @required this.child,
-    @required this.managers
-    }) : super(key: key);
+  Provider({Key key, @required this.child, @required this.managers})
+      : super(key: key);
 
   static Provider of(BuildContext context) =>
       context.ancestorWidgetOfExactType(Provider);
 
   @override
-  Widget build(BuildContext context) =>
-    child;
+  Widget build(BuildContext context) => child();
 }
 
-typedef Widget BuilderFunction(
-  BuildContext context,
-  List<Model> data,
-  [List<Manager> managers]
-);
+typedef Widget BuilderFunction(BuildContext context, List<Model> data,
+    [List<Manager> managers]);
 
 class Consumer extends StatelessWidget {
   final List<Type> models;
@@ -70,8 +59,8 @@ class Consumer extends StatelessWidget {
 
     for (Type model in models) {
       // TODO: catch StateError and throw something more informative
-      Manager requiredManager = availableManagers.firstWhere(
-          (Manager manager) => manager.model.runtimeType == model);
+      Manager requiredManager = availableManagers
+          .firstWhere((Manager manager) => manager.model.runtimeType == model);
 
       managers.add(requiredManager);
     }
@@ -80,16 +69,13 @@ class Consumer extends StatelessWidget {
     if (managers.length == 1) {
       stream = managers[0].stream.map((data) => [data]);
     } else {
-      final modelStreams = managers.map(
-        (Manager manager) => manager.stream);
+      final modelStreams = managers.map((Manager manager) => manager.stream);
 
       stream = new CombineLatestStream(modelStreams, _toList);
     }
 
     return StreamBuilder(
-        stream: stream,
-        builder: (c, s) => builder(c, s.data, managers)
-      );
+        stream: stream, builder: (c, s) => builder(c, s.data, managers));
   }
 }
 

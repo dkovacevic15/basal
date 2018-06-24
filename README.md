@@ -85,12 +85,12 @@ class NameAndJobDisplay extends StatelessWidget {
     @override
     Widget build(BuildContext context) =>
         Consumer(
-            models: [User, Job],
+            models: [User, Task],
             builder: (context, models) {
                 final User user = models[0];
-                final Job job = models[1];
+                final Task task = models[1];
 
-                return new Text('$user ($job)');
+                return new Text('$user ($task)');
             }
         )
 }

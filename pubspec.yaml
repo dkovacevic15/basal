@@ -1,6 +1,6 @@
 name: basal
-description: A new flutter package project.
-version: 0.1.0
+description: A scalable, performant and elegant state manager for Flutter
+version: 0.1.2
 author: Dusan Kovacevic <dusankovacevic95@gmail.com>
 homepage: https://gitlab.com/dkovacevic15/basal.git
 
@@ -14,4 +14,4 @@ dev_dependencies:
     sdk: flutter
 
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+    sdk: ">=1.19.0 <2.0.0"

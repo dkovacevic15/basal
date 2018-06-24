@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.3] - 2018-06-25
+### Changed
+- Bugfix
+
+## [0.1.2] - 2018-06-24
+### Changed
+- Project description
+- Formatting
+- Bugfix
+
+## [0.1.1] - 2018-06-24
+### Changed
+- SDK version constraints
+
 ## [0.1.0] - 2018-06-24
 ### Added
 - Model class stub
