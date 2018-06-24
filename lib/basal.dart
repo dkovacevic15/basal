@@ -5,10 +5,14 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart' show CombineLatestStream, BehaviorSubject;
 import 'package:flutter/widgets.dart';
 
+/// Base class for all models. Doesn't have any functionality for now,
+/// except for enforcing mutability. Makes typing in other classes easier.
 @immutable
 abstract class Model {}
 
-class ModelManager<T extends Model> {
+/// The model manager. Wraps an instance of the provided [Model] with a
+/// [BehaviorSubject],
+class Manager<T extends Model> {
 
   final BehaviorSubject<T> _controller =
     new BehaviorSubject().asBroadcastStream();
@@ -17,7 +21,7 @@ class ModelManager<T extends Model> {
   set model(T model) => _controller.add(model);
   Stream<T> get stream => _controller.stream;
 
-  ModelManager(T initalState) {
+  Manager(T initalState) {
     _controller.add(initalState);
   }
 
@@ -27,7 +31,7 @@ class ModelManager<T extends Model> {
 class Provider extends StatelessWidget {
 
   final Widget child;
-  final List<ModelManager> managers;
+  final List<Manager> managers;
 
   Provider({
     Key key,
@@ -46,7 +50,7 @@ class Provider extends StatelessWidget {
 typedef Widget BuilderFunction(
   BuildContext context,
   List<Model> data,
-  [List<ModelManager> managers]
+  [List<Manager> managers]
 );
 
 class Consumer extends StatelessWidget {
@@ -61,13 +65,13 @@ class Consumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<ModelManager> availableManagers = Provider.of(context).managers;
-    List<ModelManager> managers = new List<ModelManager>();
+    List<Manager> availableManagers = Provider.of(context).managers;
+    List<Manager> managers = new List<Manager>();
 
     for (Type model in models) {
       // TODO: catch StateError and throw something more informative
-      ModelManager requiredManager = availableManagers.firstWhere(
-          (ModelManager manager) => manager.model.runtimeType == model);
+      Manager requiredManager = availableManagers.firstWhere(
+          (Manager manager) => manager.model.runtimeType == model);
 
       managers.add(requiredManager);
     }
@@ -77,7 +81,7 @@ class Consumer extends StatelessWidget {
       stream = managers[0].stream.map((data) => [data]);
     } else {
       final modelStreams = managers.map(
-        (ModelManager manager) => manager.stream);
+        (Manager manager) => manager.stream);
 
       stream = new CombineLatestStream(modelStreams, _toList);
     }
@@ -101,8 +105,4 @@ List<Model> _toList(a, b, [c, d, e, f, g, h, i]) {
   if (h != null) combined.add(h);
   if (i != null) combined.add(i);
   return combined;
-}
-
-void main() {
-  final test = new Consumer(models: [], builder: (context, models, [manager]) => null);
 }
